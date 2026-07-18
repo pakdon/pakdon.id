@@ -1,0 +1,21 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Konten publik: siapa saja boleh baca, hanya user yang login (admin) boleh tulis.
+    match /posts/{id}      { allow read: if true; allow write: if request.auth != null; }
+    match /products/{id}   { allow read: if true; allow write: if request.auth != null; }
+    match /courses/{id}    { allow read: if true; allow write: if request.auth != null; }
+    match /portfolio/{id}  { allow read: if true; allow write: if request.auth != null; }
+    match /testimonials/{id} { allow read: if true; allow write: if request.auth != null; }
+    match /videos/{id}     { allow read: if true; allow write: if request.auth != null; }
+
+    // Data privat: hanya admin (login) yang boleh baca/tulis.
+    // Penulisan awal (create) dari form publik dilakukan lewat API route (Admin SDK),
+    // jadi tidak butuh akses tulis publik langsung ke Firestore untuk koleksi ini.
+    match /bookings/{id}     { allow read: if request.auth != null; allow write: if request.auth != null; }
+    match /subscribers/{id}  { allow read: if request.auth != null; allow write: if request.auth != null; }
+    match /contacts/{id}     { allow read: if request.auth != null; allow write: if request.auth != null; }
+    match /orders/{id}       { allow read: if request.auth != null; allow write: if request.auth != null; }
+  }
+}
