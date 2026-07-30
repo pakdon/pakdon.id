@@ -1,0 +1,34 @@
+# ====== SITE ======
+NEXT_PUBLIC_SITE_URL=https://pakdon.id
+
+# ====== FIREBASE (client - dari Firebase Console > Project Settings > General) ======
+NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSyDCTHIP1KyeAXi50PRjITldvz4cu5bjGP4",
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN="pak-don.firebaseapp.com",
+NEXT_PUBLIC_FIREBASE_PROJECT_ID="pak-don",
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET="pak-don.firebasestorage.app",
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID="928527315759",
+NEXT_PUBLIC_FIREBASE_APP_ID="1:928527315759:web:73b38d1f27439e23c527da",
+
+# ====== FIREBASE ADMIN (server - dari Firebase Console > Project Settings > Service Accounts > Generate new private key) ======
+FIREBASE_ADMIN_PROJECT_ID="pak-don",
+FIREBASE_ADMIN_CLIENT_EMAIL="firebase-adminsdk-fbsvc@pak-don.iam.gserviceaccount.com"
+# Tempel private key di dalam tanda kutip, ganti baris baru dengan \n
+FIREBASE_ADMIN_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQD2qE8bXsdVd/Of\nWU+WfgDwT5tXXTNpNJwFKksy/d/d3By5Ld0+bLlARDzmCCXXhOwsyHDn8XJ5WeM3\nk1YCK+CZBov2dR/Qx7gExouGb90LGE7ELiPcgJhc7WFQbgJ+ySiqsWF3r627s/Iq\n8bAtTpFjGWjDtd0pZaPPzRCdiJgVcSeChn0PMYKzr1DOP5+duSaC5EmHuxLX4S+z\nV2haNnd6ORx9EyrS4qXVZ8zahUlAqrkjVMaCQwPDtUk0QELowvJz3ulHG59lUHYB\nEuGsHchHeHsXrxZ9/Naq8BiVo/SZoaG6/rWRNYLI5OsJi0W4Rirlcdm+s++t01AA\ntwBsMTjtAgMBAAECggEAOlJBoi8e4s6iBCOR9fuFLU0lZdrbtRyDZ5VAgqYUsNjC\n0eZOUdxTUSbRX3K9v9/mGBCs4artblQaraFgzNKjIIuzvGqlQzB2CmsHwpngoib1\nON3QDOs7G33lbKcWX/QgcXvPmAUqBx/dOto61ful1NDFPMFbsdYejZvnOdh6XVcV\nL4htvsxCa9CuYJpkclN8m/ogumEjrbQAJvqeQic8y+yQE8g8XI1IowwbTFaGp0VW\nJidfSp8s3TloSJgxI/fNYu1c+ig4fw4DaJsmh7awitt3Kgj6Hvtr+VB3fGn0uicF\na3NTMijDUz2Iya/P7ORHsBwrV/fXRt4SZuxn6EPRAQKBgQD/QVqKWmpEdQNktfpU\nX8yJOb3iksqMeTEKfQXM52jfdkDd7ydiwCBoewdile4BwHeb+pHLpSZurGYPbEir\nC4/+j6nb03gUbsbWDuW5mLENWac9iGzTKYJnDmRVAOaf5O5ruwAw10MQ2FY43Rkm\nBmJsYWCj59WXZj2MeDumLWCviQKBgQD3YIijr3Vp/VTsNKxMOKOLt4bvif0cymgF\nDBzrdeJcW5JHzNNUOCI8jfla7f5zBNNWl6/9mzAE1BEmc8V5h6yFOc2z2mA6WwGW\nldFzGOOsO7o173ilQ3hFxQvy8mte8lu526MVfI7V68kLqTKoq5vFlIYeHSBwWsrf\nVkeQWudhRQKBgCGivweUOoSi1ruir0YHCbDbhwYgSciQ/8FeEDGcHNm1f36/UPVW\nU+7wp1x6XU6lyh0nu6aWMKZM2XYW0syXTXZCACQTjbNDlbgHZoY6dLpJohwdqhl5\nUtG5t8brw3g2dqSDk9bbxt6lY1dC61lzZezaOB3hIug8dMfZ4CJZwG/hAoGBAJu0\n7GyzTSForqJ6yRS09eREoa922JXdpTnAFRf0PIXLsbh16XLyXkJlTtX4RZfaKrgv\nhDwKCWCQpzbf2iWTy3iUGLEjPDye+dHx/UMIII5RjfTTBcpoPHUWAV5rTkAWJrxG\nzlEA9NsbrZEkb9mRItxrjzu3M6rkyxtmsGbhgRBNAoGAAjvsOoFiJrlpy0KyaU6Q\nsXydKhuaB0T+77cRZhsxQGliBfavMafst0/CHaMCqMb7lIvKQPlnpm0Dhu6b1JZ2\nrmiGap7wWifGW1pyRVmiIsqhGdKK6fsfLPtL9PkoRcqLGpXV4a+8d99fr+PP+rYc\n/o5m0+lwMsxmwSZK/yG5LI8=\n-----END PRIVATE KEY-----\n"
+
+# ====== AI CHATBOT (Anthropic) ======
+# Dapatkan di https://console.anthropic.com/settings/keys
+ANTHROPIC_API_KEY=
+
+# ====== PAYMENT (Midtrans - cocok untuk pasar Indonesia) ======
+# Dapatkan di https://dashboard.midtrans.com/settings/config_info
+MIDTRANS_SERVER_KEY=
+NEXT_PUBLIC_MIDTRANS_CLIENT_KEY=
+MIDTRANS_IS_PRODUCTION=false
+NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION=false
+
+# ====== NEWSLETTER (opsional, Brevo/Sendinblue) ======
+BREVO_API_KEY=
+BREVO_LIST_ID=
+
+# ====== WHATSAPP (nomor tujuan notifikasi booking/kontak, format 62xxxxxxxxxx) ======
+NEXT_PUBLIC_WHATSAPP_NUMBER=6281200000000

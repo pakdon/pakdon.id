@@ -4,7 +4,7 @@ export default async function sitemap() {
   const base = process.env.NEXT_PUBLIC_SITE_URL || "https://pakdon.id";
   const posts = await getBlogPosts();
 
-  const staticRoutes = ["", "/#about", "/#services", "/#portfolio", "/#blog", "/#video", "/#products", "/#courses", "/#consultation", "/#contact"].map((path) => ({
+  const staticRoutes = ["", "/#about", "/#portfolio", "/#blog", "/#video", "/ebook", "/kelas", "/konsultasi"].map((path) => ({
     url: `${base}${path}`,
     lastModified: new Date(),
     changeFrequency: "weekly",

@@ -4,9 +4,7 @@ import Services from "@/components/Services";
 import Portfolio from "@/components/Portfolio";
 import Blog from "@/components/Blog";
 import Video from "@/components/Video";
-import Products from "@/components/Products";
-import Courses from "@/components/Courses";
-import Consultation from "@/components/Consultation";
+import OfferingsTeaser from "@/components/OfferingsTeaser";
 import Testimonials from "@/components/Testimonials";
 import Newsletter from "@/components/Newsletter";
 import Contact from "@/components/Contact";
@@ -20,9 +18,7 @@ export default function HomePage() {
       <Portfolio />
       <Blog />
       <Video />
-      <Products />
-      <Courses />
-      <Consultation />
+      <OfferingsTeaser />
       <Testimonials />
       <Newsletter />
       <Contact />

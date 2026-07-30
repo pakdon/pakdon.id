@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { Sparkles, ArrowRight, Play, TrendingUp, BadgeCheck } from "lucide-react";
 import { STATS } from "@/lib/data";
 import Reveal from "./Reveal";
@@ -57,7 +58,7 @@ export default function Hero() {
               Saya berbagi pengalaman membangun bisnis, mengembangkan sistem, memanfaatkan AI, serta menciptakan aset yang terus bertumbuh.
             </p>
             <div style={{ display: "flex", gap: 14, marginTop: 34, flexWrap: "wrap" }}>
-              <button className="pd-btn-primary" onClick={() => scrollTo("consultation")}>Konsultasi <ArrowRight size={15} /></button>
+              <Link href="/konsultasi" className="pd-btn-primary">Konsultasi <ArrowRight size={15} /></Link>
               <button className="pd-btn-secondary" onClick={() => scrollTo("blog")}>Baca Artikel</button>
               <button className="pd-btn-secondary" onClick={() => scrollTo("video")}><Play size={14} /> Lihat YouTube</button>
             </div>

@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import Link from "next/link";
 import { Send } from "lucide-react";
 import { InstagramIcon, YoutubeIcon, LinkedinIcon } from "./SocialIcons";
 
@@ -39,11 +40,15 @@ export default function Footer() {
           </div>
           <div>
             <div style={{ fontWeight: 600, marginBottom: 14, fontSize: 13.5 }}>Navigasi</div>
-            {["Tentang", "Portfolio", "Blog", "Video"].map((l) => <div key={l} className="pd-sub" style={{ fontSize: 13.5, marginBottom: 10 }}>{l}</div>)}
+            {[{ label: "Tentang", href: "/#about" }, { label: "Portfolio", href: "/#portfolio" }, { label: "Blog", href: "/#blog" }, { label: "Video", href: "/#video" }].map((l) => (
+              <Link key={l.label} href={l.href} className="pd-sub" style={{ display: "block", fontSize: 13.5, marginBottom: 10 }}>{l.label}</Link>
+            ))}
           </div>
           <div>
             <div style={{ fontWeight: 600, marginBottom: 14, fontSize: 13.5 }}>Layanan</div>
-            {["Produk Digital", "Kelas Online", "Konsultasi"].map((l) => <div key={l} className="pd-sub" style={{ fontSize: 13.5, marginBottom: 10 }}>{l}</div>)}
+            {[{ label: "Ebook & Produk Digital", href: "/ebook" }, { label: "Kelas Online", href: "/kelas" }, { label: "Konsultasi", href: "/konsultasi" }].map((l) => (
+              <Link key={l.label} href={l.href} className="pd-sub" style={{ display: "block", fontSize: 13.5, marginBottom: 10 }}>{l.label}</Link>
+            ))}
           </div>
           <div>
             <div style={{ fontWeight: 600, marginBottom: 14, fontSize: 13.5 }}>Newsletter</div>
