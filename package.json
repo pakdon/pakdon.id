@@ -9,7 +9,9 @@
     "lint": "eslint",
     "firebase:login": "firebase login",
     "firebase:deploy:rules": "firebase deploy --only firestore:rules,firestore:indexes",
-    "firebase:emulators": "firebase emulators:start"
+    "firebase:emulators": "firebase emulators:start",
+    "check-env": "node scripts-check-env.mjs",
+    "predeploy": "node scripts-check-env.mjs && next build"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.123.0",
