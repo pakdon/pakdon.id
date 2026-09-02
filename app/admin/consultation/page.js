@@ -37,7 +37,7 @@ export default function AdminConsultationPage() {
   };
 
   const addPackage = () => {
-    setPackages((prev) => [...prev, { id: `paket-baru-${prev.length + 1}`, name: "", desc: "", minutes: 60, price: 0 }]);
+    setPackages((prev) => [...prev, { id: `paket-baru-${prev.length + 1}`, name: "", desc: "", minutes: 60, price: 0, lynkUrl: "" }]);
   };
 
   const removePackage = (index) => {
@@ -51,7 +51,7 @@ export default function AdminConsultationPage() {
     try {
       const usedIds = new Set();
       const cleaned = packages
-        .map((p) => ({ name: (p.name || "").trim(), desc: p.desc || "", minutes: Number(p.minutes), price: Number(p.price) }))
+        .map((p) => ({ name: (p.name || "").trim(), desc: p.desc || "", minutes: Number(p.minutes), price: Number(p.price), lynkUrl: (p.lynkUrl || "").trim() }))
         .filter((p) => p.name && p.minutes > 0 && p.price >= 0)
         .map((p) => {
           let id = slugify(p.name);
@@ -105,6 +105,10 @@ export default function AdminConsultationPage() {
                   <label className="pd-sub" style={{ fontSize: 11.5, display: "block", marginBottom: 4 }}>4. Harga (Rp)</label>
                   <input className="pd-input" type="number" value={p.price} onChange={(e) => updateField(i, "price", e.target.value)} />
                 </div>
+                <div style={{ gridColumn: "1 / -1" }}>
+                  <label className="pd-sub" style={{ fontSize: 11.5, display: "block", marginBottom: 4 }}>5. Link Lynk.id</label>
+                  <input className="pd-input" value={p.lynkUrl || ""} onChange={(e) => updateField(i, "lynkUrl", e.target.value)} placeholder="https://lynk.id/pakdon/xxxxx" />
+                </div>
               </div>
               <button onClick={() => removePackage(i)} style={{ background: "none", border: "none", cursor: "pointer", color: "#e5484d", marginTop: 12, display: "flex", alignItems: "center", gap: 6, fontSize: 13 }}>
                 <Trash2 size={15} /> Hapus paket ini
@@ -136,6 +140,7 @@ export default function AdminConsultationPage() {
               <div className="pd-sub" style={{ fontSize: 12, marginTop: 4 }}>{p.minutes || 0} menit</div>
               <div className="pd-sub" style={{ fontSize: 12, marginTop: 2 }}>{p.desc || "—"}</div>
               <div style={{ fontWeight: 600, marginTop: 10, fontSize: 13.5 }}>{formatIDR(Number(p.price) || 0)}</div>
+              {p.lynkUrl && <div className="pd-sub" style={{ fontSize: 11, marginTop: 6, wordBreak: "break-all" }}>{p.lynkUrl}</div>}
             </div>
           ))}
         </div>

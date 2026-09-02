@@ -1,13 +1,15 @@
 "use client";
 import { useState } from "react";
-import { Calendar, MessageCircle, Mail, ArrowRight } from "lucide-react";
+import { Calendar, MessageCircle, Mail, ArrowRight, ExternalLink } from "lucide-react";
 import { DURATIONS as DEFAULT_DURATIONS, formatIDR } from "@/lib/data";
 import Reveal from "./Reveal";
 
 // `packages` dikirim dari app/konsultasi/page.js (Server Component) hasil fetch Firestore
 // (lihat lib/content.js -> getConsultationDurations), dengan fallback ke DEFAULT_DURATIONS
 // supaya form tetap tampil normal walau Firestore/CMS belum diisi.
-// Setiap paket: { id, name, desc, minutes, price }
+// Setiap paket: { id, name, desc, minutes, price, lynkUrl }
+// Pembayaran dilakukan lewat link produk Lynk.id masing-masing paket (lynkUrl),
+// sementara form di bawah dipakai untuk mencatat detail booking & jadwal via WhatsApp.
 export default function Consultation({ packages = DEFAULT_DURATIONS }) {
   const [selectedId, setSelectedId] = useState(packages[0]?.id);
   const [form, setForm] = useState({ name: "", whatsapp: "", topic: "" });
@@ -30,6 +32,11 @@ export default function Consultation({ packages = DEFAULT_DURATIONS }) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Gagal booking");
       setResult(data);
+      // Kalau paket ini punya link Lynk.id, langsung buka di tab baru supaya
+      // pembeli bisa lanjut bayar tanpa harus klik dua kali.
+      if (selectedPackage?.lynkUrl) {
+        window.open(selectedPackage.lynkUrl, "_blank", "noopener,noreferrer");
+      }
     } catch (e) {
       setError(e.message);
     } finally {
@@ -44,7 +51,7 @@ export default function Consultation({ packages = DEFAULT_DURATIONS }) {
           <div>
             <span className="pd-eyebrow">Consultation</span>
             <h2 className="pd-h2">Diskusi Langsung dengan Pak Don</h2>
-            <p className="pd-sub" style={{ marginTop: 16 }}>Booking sesi konsultasi 1-on-1 untuk membahas tantangan bisnis Anda secara spesifik.</p>
+            <p className="pd-sub" style={{ marginTop: 16 }}>Booking sesi konsultasi 1-on-1 untuk membahas tantangan bisnis Anda secara spesifik. Pembayaran diproses aman lewat Lynk.id.</p>
             <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 26 }}>
               {[{ icon: Calendar, label: "Terintegrasi Google Calendar" }, { icon: MessageCircle, label: "Konfirmasi via WhatsApp" }, { icon: Mail, label: "Notifikasi & recap via Email" }].map((f) => (
                 <div key={f.label} style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 14 }}>
@@ -59,10 +66,21 @@ export default function Consultation({ packages = DEFAULT_DURATIONS }) {
             {result ? (
               <div style={{ textAlign: "center", padding: "20px 0" }}>
                 <div className="pd-h3">Booking diterima!</div>
-                <p className="pd-sub" style={{ fontSize: 13.5, marginTop: 8 }}>Selesaikan konfirmasi lewat WhatsApp agar jadwal segera dikunci.</p>
-                <a href={result.waLink} target="_blank" rel="noreferrer" className="pd-btn-primary" style={{ marginTop: 18, justifyContent: "center" }}>
-                  <MessageCircle size={15} /> Konfirmasi via WhatsApp
-                </a>
+                <p className="pd-sub" style={{ fontSize: 13.5, marginTop: 8 }}>
+                  {selectedPackage?.lynkUrl
+                    ? "Halaman pembayaran Lynk.id sudah dibuka di tab baru. Setelah bayar, konfirmasi jadwal lewat WhatsApp agar segera dikunci."
+                    : "Selesaikan konfirmasi lewat WhatsApp agar jadwal segera dikunci."}
+                </p>
+                <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 18 }}>
+                  {selectedPackage?.lynkUrl && (
+                    <a href={selectedPackage.lynkUrl} target="_blank" rel="noreferrer" className="pd-btn-primary" style={{ justifyContent: "center" }}>
+                      Bayar via Lynk.id <ExternalLink size={15} />
+                    </a>
+                  )}
+                  <a href={result.waLink} target="_blank" rel="noreferrer" className="pd-btn-secondary" style={{ justifyContent: "center" }}>
+                    <MessageCircle size={15} /> Konfirmasi via WhatsApp
+                  </a>
+                </div>
               </div>
             ) : (
               <>
@@ -75,6 +93,17 @@ export default function Consultation({ packages = DEFAULT_DURATIONS }) {
                       <div className="pd-sub" style={{ fontSize: 12, marginTop: 4 }}>{p.minutes} menit</div>
                       <div className="pd-sub" style={{ fontSize: 12, marginTop: 2 }}>{p.desc}</div>
                       <div style={{ fontWeight: 600, marginTop: 10, fontSize: 13.5 }}>{formatIDR(p.price)}</div>
+                      {p.lynkUrl && (
+                        <a
+                          href={p.lynkUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          style={{ display: "inline-flex", alignItems: "center", gap: 4, marginTop: 8, fontSize: 11.5, fontWeight: 600, color: "var(--accent-dark)" }}
+                        >
+                          Lihat di Lynk.id <ExternalLink size={11} />
+                        </a>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -87,6 +116,11 @@ export default function Consultation({ packages = DEFAULT_DURATIONS }) {
                 <button className="pd-btn-primary" style={{ marginTop: 18, width: "100%", justifyContent: "center" }} onClick={submit} disabled={loading}>
                   {loading ? "Memproses..." : `Booking ${selectedPackage?.name || ""}`} <ArrowRight size={15} />
                 </button>
+                {selectedPackage?.lynkUrl && (
+                  <p className="pd-sub" style={{ fontSize: 11.5, marginTop: 10, textAlign: "center" }}>
+                    Klik booking akan membuka halaman pembayaran Lynk.id di tab baru.
+                  </p>
+                )}
               </>
             )}
           </div>

@@ -24,7 +24,7 @@ export async function POST(req) {
     if (adminDb) {
       const ref = await adminDb.collection("bookings").add({
         name, whatsapp, topic: topic || "",
-        packageId: pkg.id, packageName: pkg.name, duration: pkg.minutes, price: pkg.price,
+        packageId: pkg.id, packageName: pkg.name, duration: pkg.minutes, price: pkg.price, lynkUrl: pkg.lynkUrl || "",
         status: "pending_payment",
         createdAt: new Date().toISOString(),
       });
