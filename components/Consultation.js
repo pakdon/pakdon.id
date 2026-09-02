@@ -4,15 +4,18 @@ import { Calendar, MessageCircle, Mail, ArrowRight } from "lucide-react";
 import { DURATIONS as DEFAULT_DURATIONS, formatIDR } from "@/lib/data";
 import Reveal from "./Reveal";
 
-// `durations` dikirim dari app/konsultasi/page.js (Server Component) hasil fetch Firestore
+// `packages` dikirim dari app/konsultasi/page.js (Server Component) hasil fetch Firestore
 // (lihat lib/content.js -> getConsultationDurations), dengan fallback ke DEFAULT_DURATIONS
 // supaya form tetap tampil normal walau Firestore/CMS belum diisi.
-export default function Consultation({ durations = DEFAULT_DURATIONS }) {
-  const [duration, setDuration] = useState(durations[0]?.minutes || 60);
+// Setiap paket: { id, name, desc, minutes, price }
+export default function Consultation({ packages = DEFAULT_DURATIONS }) {
+  const [selectedId, setSelectedId] = useState(packages[0]?.id);
   const [form, setForm] = useState({ name: "", whatsapp: "", topic: "" });
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
+
+  const selectedPackage = packages.find((p) => p.id === selectedId) || packages[0];
 
   const submit = async () => {
     if (!form.name || !form.whatsapp) { setError("Nama dan WhatsApp wajib diisi"); return; }
@@ -22,7 +25,7 @@ export default function Consultation({ durations = DEFAULT_DURATIONS }) {
       const res = await fetch("/api/consultation", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, duration }),
+        body: JSON.stringify({ ...form, packageId: selectedPackage?.id }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Gagal booking");
@@ -63,14 +66,15 @@ export default function Consultation({ durations = DEFAULT_DURATIONS }) {
               </div>
             ) : (
               <>
-                <div style={{ fontWeight: 600, marginBottom: 14, fontSize: 14 }}>Pilih durasi sesi</div>
+                <div style={{ fontWeight: 600, marginBottom: 14, fontSize: 14 }}>Pilih paket konsultasi</div>
                 <div className="grid-3">
-                  {durations.map((d) => (
-                    <div key={d.minutes} onClick={() => setDuration(d.minutes)}
-                      style={{ border: `1.5px solid ${duration === d.minutes ? "var(--accent)" : "var(--border)"}`, borderRadius: 16, padding: 16, cursor: "pointer", background: duration === d.minutes ? "color-mix(in srgb, var(--accent) 10%, transparent)" : "transparent", transition: "all .25s ease" }}>
-                      <div style={{ fontWeight: 700, fontSize: 18 }}>{d.minutes}<span style={{ fontSize: 12, fontWeight: 500 }}> menit</span></div>
-                      <div style={{ fontSize: 12, color: "var(--text-secondary)", marginTop: 4 }}>{d.desc}</div>
-                      <div style={{ fontWeight: 600, marginTop: 10, fontSize: 13.5 }}>{formatIDR(d.price)}</div>
+                  {packages.map((p) => (
+                    <div key={p.id} onClick={() => setSelectedId(p.id)}
+                      style={{ border: `1.5px solid ${selectedId === p.id ? "var(--accent)" : "var(--border)"}`, borderRadius: 16, padding: 16, cursor: "pointer", background: selectedId === p.id ? "color-mix(in srgb, var(--accent) 10%, transparent)" : "transparent", transition: "all .25s ease" }}>
+                      <div style={{ fontWeight: 700, fontSize: 15 }}>{p.name}</div>
+                      <div className="pd-sub" style={{ fontSize: 12, marginTop: 4 }}>{p.minutes} menit</div>
+                      <div className="pd-sub" style={{ fontSize: 12, marginTop: 2 }}>{p.desc}</div>
+                      <div style={{ fontWeight: 600, marginTop: 10, fontSize: 13.5 }}>{formatIDR(p.price)}</div>
                     </div>
                   ))}
                 </div>
@@ -81,7 +85,7 @@ export default function Consultation({ durations = DEFAULT_DURATIONS }) {
                 <input className="pd-input" placeholder="Topik yang ingin dibahas" style={{ marginTop: 12 }} value={form.topic} onChange={(e) => setForm({ ...form, topic: e.target.value })} />
                 {error && <div style={{ color: "#e5484d", fontSize: 12.5, marginTop: 10 }}>{error}</div>}
                 <button className="pd-btn-primary" style={{ marginTop: 18, width: "100%", justifyContent: "center" }} onClick={submit} disabled={loading}>
-                  {loading ? "Memproses..." : `Booking Sesi ${duration} Menit`} <ArrowRight size={15} />
+                  {loading ? "Memproses..." : `Booking ${selectedPackage?.name || ""}`} <ArrowRight size={15} />
                 </button>
               </>
             )}

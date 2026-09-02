@@ -24,12 +24,12 @@ export async function POST(req) {
     else if (type === "course") item = COURSES.find((c) => c.id === itemId);
     else if (type === "consultation") {
       const durations = await getConsultationDurations();
-      item = durations.find((d) => String(d.minutes) === String(itemId));
+      item = durations.find((d) => d.id === itemId);
     }
     if (!item) return Response.json({ error: "Item tidak ditemukan" }, { status: 404 });
 
     const price = item.price;
-    const name = item.title || `Konsultasi ${item.minutes} Menit`;
+    const name = item.title || item.name || `Konsultasi ${item.minutes} Menit`;
     const orderId = `${type}-${itemId}-${Date.now()}`;
 
     const snap = getSnap();

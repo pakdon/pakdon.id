@@ -4,13 +4,13 @@ import { useEffect, useState } from "react";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Save, Plus, Trash2 } from "lucide-react";
-import { DURATIONS as DEFAULT_DURATIONS, formatIDR } from "@/lib/data";
+import { DURATIONS as DEFAULT_DURATIONS, formatIDR, slugify } from "@/lib/data";
 
-// Halaman ini mengatur harga & deskripsi sesi konsultasi (30/60/120 menit, atau custom).
+// Halaman ini mengatur paket konsultasi: Nama Paket, Deskripsi, Durasi, dan Harga.
 // Disimpan sebagai 1 dokumen tunggal di Firestore: settings/consultation.
 // Halaman /konsultasi (publik) membaca dokumen ini lewat lib/content.js -> getConsultationDurations().
 export default function AdminConsultationPage() {
-  const [durations, setDurations] = useState(DEFAULT_DURATIONS);
+  const [packages, setPackages] = useState(DEFAULT_DURATIONS);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [savedAt, setSavedAt] = useState(null);
@@ -22,10 +22,10 @@ export default function AdminConsultationPage() {
       try {
         const snap = await getDoc(doc(db, "settings", "consultation"));
         if (snap.exists() && Array.isArray(snap.data().durations) && snap.data().durations.length) {
-          setDurations(snap.data().durations);
+          setPackages(snap.data().durations);
         }
       } catch (e) {
-        console.warn("Gagal memuat harga konsultasi:", e.message);
+        console.warn("Gagal memuat paket konsultasi:", e.message);
       } finally {
         setLoading(false);
       }
@@ -33,15 +33,15 @@ export default function AdminConsultationPage() {
   }, []);
 
   const updateField = (index, field, value) => {
-    setDurations((prev) => prev.map((d, i) => (i === index ? { ...d, [field]: value } : d)));
+    setPackages((prev) => prev.map((p, i) => (i === index ? { ...p, [field]: value } : p)));
   };
 
-  const addDuration = () => {
-    setDurations((prev) => [...prev, { minutes: 90, price: 800000, desc: "" }]);
+  const addPackage = () => {
+    setPackages((prev) => [...prev, { id: `paket-baru-${prev.length + 1}`, name: "", desc: "", minutes: 60, price: 0 }]);
   };
 
-  const removeDuration = (index) => {
-    setDurations((prev) => prev.filter((_, i) => i !== index));
+  const removePackage = (index) => {
+    setPackages((prev) => prev.filter((_, i) => i !== index));
   };
 
   const save = async () => {
@@ -49,15 +49,24 @@ export default function AdminConsultationPage() {
     setSaving(true);
     setError("");
     try {
-      const cleaned = durations
-        .map((d) => ({ minutes: Number(d.minutes), price: Number(d.price), desc: d.desc || "" }))
-        .filter((d) => d.minutes > 0 && d.price >= 0)
+      const usedIds = new Set();
+      const cleaned = packages
+        .map((p) => ({ name: (p.name || "").trim(), desc: p.desc || "", minutes: Number(p.minutes), price: Number(p.price) }))
+        .filter((p) => p.name && p.minutes > 0 && p.price >= 0)
+        .map((p) => {
+          let id = slugify(p.name);
+          let candidate = id;
+          let n = 2;
+          while (usedIds.has(candidate)) { candidate = `${id}-${n}`; n += 1; }
+          usedIds.add(candidate);
+          return { id: candidate, ...p };
+        })
         .sort((a, b) => a.minutes - b.minutes);
 
-      if (cleaned.length === 0) { setError("Minimal harus ada 1 pilihan durasi."); setSaving(false); return; }
+      if (cleaned.length === 0) { setError("Minimal harus ada 1 paket dengan nama, durasi, dan harga terisi."); setSaving(false); return; }
 
       await setDoc(doc(db, "settings", "consultation"), { durations: cleaned, updatedAt: new Date().toISOString() });
-      setDurations(cleaned);
+      setPackages(cleaned);
       setSavedAt(new Date());
     } catch (e) {
       setError("Gagal menyimpan: " + e.message);
@@ -72,34 +81,40 @@ export default function AdminConsultationPage() {
     <div>
       <h1 className="pd-h2" style={{ fontSize: 26 }}>Harga Konsultasi</h1>
       <p className="pd-sub" style={{ fontSize: 14, marginTop: 6 }}>
-        Atur pilihan durasi, harga, dan deskripsi singkat yang tampil di halaman <code>/konsultasi</code>.
+        Atur paket konsultasi yang tampil di halaman <code>/konsultasi</code>: nama paket, deskripsi, durasi, dan harga.
       </p>
 
       <div className="pd-card" style={{ padding: 22, marginTop: 20 }}>
-        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-          {durations.map((d, i) => (
-            <div key={i} style={{ display: "grid", gridTemplateColumns: "110px 160px 1fr 40px", gap: 10, alignItems: "center" }}>
-              <div>
-                <label className="pd-sub" style={{ fontSize: 11.5, display: "block", marginBottom: 4 }}>Durasi (menit)</label>
-                <input className="pd-input" type="number" value={d.minutes} onChange={(e) => updateField(i, "minutes", e.target.value)} />
+        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          {packages.map((p, i) => (
+            <div key={i} style={{ border: "1px solid var(--border)", borderRadius: 14, padding: 16 }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                <div>
+                  <label className="pd-sub" style={{ fontSize: 11.5, display: "block", marginBottom: 4 }}>1. Nama Paket</label>
+                  <input className="pd-input" value={p.name} onChange={(e) => updateField(i, "name", e.target.value)} placeholder="mis. Konsultasi Singkat" />
+                </div>
+                <div>
+                  <label className="pd-sub" style={{ fontSize: 11.5, display: "block", marginBottom: 4 }}>2. Deskripsi</label>
+                  <input className="pd-input" value={p.desc} onChange={(e) => updateField(i, "desc", e.target.value)} placeholder="mis. Diskusi mendalam satu topik" />
+                </div>
+                <div>
+                  <label className="pd-sub" style={{ fontSize: 11.5, display: "block", marginBottom: 4 }}>3. Durasi (menit)</label>
+                  <input className="pd-input" type="number" value={p.minutes} onChange={(e) => updateField(i, "minutes", e.target.value)} />
+                </div>
+                <div>
+                  <label className="pd-sub" style={{ fontSize: 11.5, display: "block", marginBottom: 4 }}>4. Harga (Rp)</label>
+                  <input className="pd-input" type="number" value={p.price} onChange={(e) => updateField(i, "price", e.target.value)} />
+                </div>
               </div>
-              <div>
-                <label className="pd-sub" style={{ fontSize: 11.5, display: "block", marginBottom: 4 }}>Harga (Rp)</label>
-                <input className="pd-input" type="number" value={d.price} onChange={(e) => updateField(i, "price", e.target.value)} />
-              </div>
-              <div>
-                <label className="pd-sub" style={{ fontSize: 11.5, display: "block", marginBottom: 4 }}>Deskripsi singkat</label>
-                <input className="pd-input" value={d.desc} onChange={(e) => updateField(i, "desc", e.target.value)} placeholder="mis. Diskusi mendalam satu topik" />
-              </div>
-              <button onClick={() => removeDuration(i)} style={{ background: "none", border: "none", cursor: "pointer", color: "#e5484d", marginTop: 18 }} title="Hapus durasi ini">
-                <Trash2 size={17} />
+              <button onClick={() => removePackage(i)} style={{ background: "none", border: "none", cursor: "pointer", color: "#e5484d", marginTop: 12, display: "flex", alignItems: "center", gap: 6, fontSize: 13 }}>
+                <Trash2 size={15} /> Hapus paket ini
               </button>
             </div>
           ))}
         </div>
 
-        <button className="pd-btn-secondary" style={{ marginTop: 18 }} onClick={addDuration}>
-          <Plus size={15} /> Tambah Pilihan Durasi
+        <button className="pd-btn-secondary" style={{ marginTop: 18 }} onClick={addPackage}>
+          <Plus size={15} /> Tambah Paket Konsultasi
         </button>
 
         {error && <div style={{ color: "#e5484d", fontSize: 12.5, marginTop: 14 }}>{error}</div>}
@@ -115,11 +130,12 @@ export default function AdminConsultationPage() {
       <div className="pd-card" style={{ padding: 22, marginTop: 20 }}>
         <div className="pd-h3" style={{ fontSize: 15, marginBottom: 12 }}>Pratinjau di halaman publik</div>
         <div className="grid-3">
-          {durations.map((d, i) => (
+          {packages.map((p, i) => (
             <div key={i} style={{ border: "1.5px solid var(--border)", borderRadius: 16, padding: 16 }}>
-              <div style={{ fontWeight: 700, fontSize: 18 }}>{d.minutes}<span style={{ fontSize: 12, fontWeight: 500 }}> menit</span></div>
-              <div className="pd-sub" style={{ fontSize: 12, marginTop: 4 }}>{d.desc || "—"}</div>
-              <div style={{ fontWeight: 600, marginTop: 10, fontSize: 13.5 }}>{formatIDR(Number(d.price) || 0)}</div>
+              <div style={{ fontWeight: 700, fontSize: 15 }}>{p.name || "(Nama paket belum diisi)"}</div>
+              <div className="pd-sub" style={{ fontSize: 12, marginTop: 4 }}>{p.minutes || 0} menit</div>
+              <div className="pd-sub" style={{ fontSize: 12, marginTop: 2 }}>{p.desc || "—"}</div>
+              <div style={{ fontWeight: 600, marginTop: 10, fontSize: 13.5 }}>{formatIDR(Number(p.price) || 0)}</div>
             </div>
           ))}
         </div>

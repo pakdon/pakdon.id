@@ -1,28 +1,30 @@
 import { adminDb } from "@/lib/firebaseAdmin";
 import { getConsultationDurations } from "@/lib/content";
 
-// Catatan: booking di sini menyimpan permintaan ke Firestore koleksi "bookings".
-// Harga per durasi diambil dari getConsultationDurations() (Firestore settings/consultation,
-// diatur lewat Admin > Harga Konsultasi), supaya harga yang dicatat selalu konsisten dengan yang tampil di halaman.
+// Booking di sini menyimpan permintaan ke Firestore koleksi "bookings".
+// Detail paket (nama, durasi, harga) diambil dari getConsultationDurations() (Firestore
+// settings/consultation, diatur lewat Admin > Harga Konsultasi) berdasarkan packageId yang dipilih,
+// supaya data yang dicatat selalu konsisten dengan yang tampil di halaman publik.
 // Untuk auto-create event di Google Calendar, hubungkan Google Calendar API
 // (OAuth service account + calendar.events.insert) di sini setelah dokumen tersimpan.
 export async function POST(req) {
   const body = await req.json();
-  const { name, whatsapp, topic, duration } = body || {};
+  const { name, whatsapp, topic, packageId } = body || {};
 
-  if (!name || !whatsapp || !duration) {
-    return Response.json({ error: "Nama, WhatsApp, dan durasi wajib diisi" }, { status: 400 });
+  if (!name || !whatsapp || !packageId) {
+    return Response.json({ error: "Nama, WhatsApp, dan paket konsultasi wajib diisi" }, { status: 400 });
   }
 
   try {
-    const durations = await getConsultationDurations();
-    const selected = durations.find((d) => String(d.minutes) === String(duration));
-    const price = selected?.price ?? null;
+    const packages = await getConsultationDurations();
+    const pkg = packages.find((p) => p.id === packageId);
+    if (!pkg) return Response.json({ error: "Paket konsultasi tidak ditemukan" }, { status: 404 });
 
     let bookingId = null;
     if (adminDb) {
       const ref = await adminDb.collection("bookings").add({
-        name, whatsapp, topic: topic || "", duration, price,
+        name, whatsapp, topic: topic || "",
+        packageId: pkg.id, packageName: pkg.name, duration: pkg.minutes, price: pkg.price,
         status: "pending_payment",
         createdAt: new Date().toISOString(),
       });
@@ -31,7 +33,7 @@ export async function POST(req) {
 
     const waNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "6281200000000";
     const waText = encodeURIComponent(
-      `Halo Pak Don, saya ${name} ingin booking konsultasi ${duration} menit.\nTopik: ${topic || "-"}\nID Booking: ${bookingId || "-"}`
+      `Halo Pak Don, saya ${name} ingin booking ${pkg.name} (${pkg.minutes} menit).\nTopik: ${topic || "-"}\nID Booking: ${bookingId || "-"}`
     );
     const waLink = `https://wa.me/${waNumber}?text=${waText}`;
 

@@ -8,10 +8,10 @@ export const metadata = {
 };
 
 export default async function KonsultasiPage() {
-  const durations = await getConsultationDurations();
+  const packages = await getConsultationDurations();
   return (
     <main>
-      <Consultation durations={durations} />
+      <Consultation packages={packages} />
     </main>
   );
 }
