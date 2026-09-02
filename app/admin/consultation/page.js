@@ -65,11 +65,23 @@ export default function AdminConsultationPage() {
 
       if (cleaned.length === 0) { setError("Minimal harus ada 1 paket dengan nama, durasi, dan harga terisi."); setSaving(false); return; }
 
-      await setDoc(doc(db, "settings", "consultation"), { durations: cleaned, updatedAt: new Date().toISOString() });
+      // Batas waktu 15 detik — kalau Firestore tidak merespons sama sekali (bukan error, tapi hang),
+      // tombol tidak akan stuck selamanya dan penyebabnya lebih mudah didiagnosis.
+      const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error("TIMEOUT")), 15000));
+      await Promise.race([
+        setDoc(doc(db, "settings", "consultation"), { durations: cleaned, updatedAt: new Date().toISOString() }),
+        timeout,
+      ]);
       setPackages(cleaned);
       setSavedAt(new Date());
     } catch (e) {
-      setError("Gagal menyimpan: " + e.message);
+      if (e.message === "TIMEOUT") {
+        setError("Waktu penyimpanan habis (15 detik) — kemungkinan Firestore rules belum ter-deploy, koneksi terblokir (coba matikan ad-blocker/VPN), atau project Firebase salah konfigurasi.");
+      } else if (e.code === "permission-denied") {
+        setError("Akses ditolak Firestore — pastikan firestore.rules sudah di-deploy dan Anda login sebagai admin yang valid.");
+      } else {
+        setError("Gagal menyimpan: " + e.message);
+      }
     } finally {
       setSaving(false);
     }
@@ -140,7 +152,6 @@ export default function AdminConsultationPage() {
               <div className="pd-sub" style={{ fontSize: 12, marginTop: 4 }}>{p.minutes || 0} menit</div>
               <div className="pd-sub" style={{ fontSize: 12, marginTop: 2 }}>{p.desc || "—"}</div>
               <div style={{ fontWeight: 600, marginTop: 10, fontSize: 13.5 }}>{formatIDR(Number(p.price) || 0)}</div>
-              {p.lynkUrl && <div className="pd-sub" style={{ fontSize: 11, marginTop: 6, wordBreak: "break-all" }}>{p.lynkUrl}</div>}
             </div>
           ))}
         </div>
