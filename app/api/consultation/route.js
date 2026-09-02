@@ -1,6 +1,9 @@
 import { adminDb } from "@/lib/firebaseAdmin";
+import { getConsultationDurations } from "@/lib/content";
 
 // Catatan: booking di sini menyimpan permintaan ke Firestore koleksi "bookings".
+// Harga per durasi diambil dari getConsultationDurations() (Firestore settings/consultation,
+// diatur lewat Admin > Harga Konsultasi), supaya harga yang dicatat selalu konsisten dengan yang tampil di halaman.
 // Untuk auto-create event di Google Calendar, hubungkan Google Calendar API
 // (OAuth service account + calendar.events.insert) di sini setelah dokumen tersimpan.
 export async function POST(req) {
@@ -12,10 +15,14 @@ export async function POST(req) {
   }
 
   try {
+    const durations = await getConsultationDurations();
+    const selected = durations.find((d) => String(d.minutes) === String(duration));
+    const price = selected?.price ?? null;
+
     let bookingId = null;
     if (adminDb) {
       const ref = await adminDb.collection("bookings").add({
-        name, whatsapp, topic: topic || "", duration,
+        name, whatsapp, topic: topic || "", duration, price,
         status: "pending_payment",
         createdAt: new Date().toISOString(),
       });

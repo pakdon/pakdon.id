@@ -17,14 +17,12 @@ Daftar video: ${VIDEOS.map((v) => v.title).join(", ")}
 Daftar produk digital: ${DIGITAL_PRODUCTS.map((p) => p.title).join(", ")}
 Daftar kelas online: ${COURSES.map((c) => c.title).join(", ")}`;
 
-// Fallback jawaban berbasis kata kunci — dipakai bila ANTHROPIC_API_KEY belum diisi,
-// supaya chatbot tetap merespons saat demo tanpa API key.
 function keywordFallback(text) {
   const q = text.toLowerCase();
   if (q.includes("ai")) return "Untuk topik AI, coba baca artikel \"3 Cara UMKM Mulai Pakai AI Tanpa Tim IT\" atau tonton video \"Setup AI Customer Service dalam 20 Menit\".";
-  if (q.includes("konsultasi") || q.includes("booking")) return "Anda bisa langsung booking di bagian Konsultasi — tersedia sesi 30, 60, atau 120 menit.";
-  if (q.includes("produk") || q.includes("ebook") || q.includes("template")) return "Lihat koleksi Digital Product kami — ada SOP, dashboard, template, dan prompt AI siap pakai.";
-  if (q.includes("kelas") || q.includes("course")) return "Kami punya 5 kelas online, mulai dari AI untuk UMKM hingga Financial Freedom Blueprint.";
+  if (q.includes("konsultasi") || q.includes("booking")) return "Anda bisa langsung booking di halaman /konsultasi — tersedia beberapa pilihan durasi.";
+  if (q.includes("produk") || q.includes("ebook") || q.includes("template")) return "Lihat koleksi Ebook & Produk Digital kami di halaman /ebook — ada SOP, dashboard, template, dan prompt AI siap pakai.";
+  if (q.includes("kelas") || q.includes("course")) return "Kami punya beberapa kelas online di halaman /kelas, mulai dari AI untuk UMKM hingga Financial Freedom Blueprint.";
   return "Terima kasih sudah bertanya. Untuk pembahasan lebih mendalam, saya sarankan booking sesi konsultasi dengan Pak Don ya.";
 }
 
@@ -38,14 +36,11 @@ export async function POST(req) {
     }
 
     const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-
     const response = await anthropic.messages.create({
       model: "claude-sonnet-4-6",
       max_tokens: 400,
       system: SYSTEM_PROMPT,
-      messages: messages
-        .filter((m) => m.role === "user" || m.role === "assistant")
-        .map((m) => ({ role: m.role, content: m.content })),
+      messages: messages.filter((m) => m.role === "user" || m.role === "assistant").map((m) => ({ role: m.role, content: m.content })),
     });
 
     const reply = response.content.find((b) => b.type === "text")?.text || "Maaf, saya belum bisa menjawab itu.";

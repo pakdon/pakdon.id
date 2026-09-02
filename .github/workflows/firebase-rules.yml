@@ -1,7 +1,5 @@
 name: Deploy Firestore Rules
 
-# Otomatis deploy firestore.rules & firestore.indexes.json setiap ada perubahan di branch main.
-# Butuh secret FIREBASE_TOKEN (lihat README bagian "GitHub Actions").
 on:
   push:
     branches: [main]
@@ -15,13 +13,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-
       - run: npm install -g firebase-tools
-
       - name: Deploy Firestore Rules
         run: firebase deploy --only firestore:rules,firestore:indexes --token "$FIREBASE_TOKEN" --project "$FIREBASE_PROJECT_ID"
         env:

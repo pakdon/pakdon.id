@@ -1,5 +1,3 @@
-// Lucide-react versi terbaru menghapus ikon brand (Instagram/YouTube/LinkedIn/TikTok)
-// karena isu trademark, jadi kita pakai SVG ringan sendiri untuk ikon sosial media ini.
 export function InstagramIcon({ size = 16, color = "currentColor" }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">

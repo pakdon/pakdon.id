@@ -4,8 +4,6 @@ import Script from "next/script";
 import { X } from "lucide-react";
 import { formatIDR } from "@/lib/data";
 
-// Modal pembelian generik — dipakai untuk checkout Produk Digital (Ebook) maupun Kelas Online.
-// `type` dikirim ke /api/checkout: "product" atau "course".
 export default function BuyModal({ item, type, onClose }) {
   const [form, setForm] = useState({ name: "", email: "", phone: "" });
   const [loading, setLoading] = useState(false);

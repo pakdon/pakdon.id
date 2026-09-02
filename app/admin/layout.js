@@ -3,13 +3,14 @@ import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
-import { LayoutDashboard, FileText, Package, Calendar, Users, LogOut } from "lucide-react";
+import { LayoutDashboard, FileText, Package, Calendar, Users, LogOut, Wallet } from "lucide-react";
 import Link from "next/link";
 
 const LINKS = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/blog", label: "Artikel", icon: FileText },
   { href: "/admin/products", label: "Produk Digital", icon: Package },
+  { href: "/admin/consultation", label: "Harga Konsultasi", icon: Wallet },
   { href: "/admin/bookings", label: "Booking Konsultasi", icon: Calendar },
   { href: "/admin/subscribers", label: "Subscriber", icon: Users },
 ];

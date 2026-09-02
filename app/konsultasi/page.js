@@ -1,3 +1,4 @@
+import { getConsultationDurations } from "@/lib/content";
 import Consultation from "@/components/Consultation";
 
 export const metadata = {
@@ -6,10 +7,11 @@ export const metadata = {
   alternates: { canonical: "/konsultasi" },
 };
 
-export default function KonsultasiPage() {
+export default async function KonsultasiPage() {
+  const durations = await getConsultationDurations();
   return (
     <main>
-      <Consultation />
+      <Consultation durations={durations} />
     </main>
   );
 }

@@ -39,8 +39,6 @@ export default function Navbar() {
     localStorage.setItem("pd-theme", next ? "dark" : "light");
   };
 
-  // Link anchor (Beranda/Tentang/Portfolio/Blog) hanya valid discroll di homepage.
-  // Kalau sedang di halaman lain (mis. /ebook), klik anchor akan membawa balik ke homepage + hash.
   const goToAnchor = (id) => {
     setMenuOpen(false);
     if (isHome) {

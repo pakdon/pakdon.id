@@ -1,8 +1,6 @@
 import crypto from "crypto";
 import { adminDb } from "@/lib/firebaseAdmin";
 
-// Endpoint ini didaftarkan di Midtrans Dashboard > Settings > Configuration > Payment Notification URL
-// Contoh: https://pakdon.id/api/webhook/midtrans
 export async function POST(req) {
   try {
     const body = await req.json();

@@ -1,6 +1,7 @@
 import { getSnap } from "@/lib/midtrans";
 import { adminDb } from "@/lib/firebaseAdmin";
-import { DIGITAL_PRODUCTS, COURSES, DURATIONS } from "@/lib/data";
+import { DIGITAL_PRODUCTS, COURSES } from "@/lib/data";
+import { getConsultationDurations } from "@/lib/content";
 
 // Menerima: { type: "product" | "course" | "consultation", itemId, buyer: { name, email, phone } }
 // Mengembalikan Midtrans Snap token untuk dibuka lewat window.snap.pay(token) di client.
@@ -21,7 +22,10 @@ export async function POST(req) {
     let item;
     if (type === "product") item = DIGITAL_PRODUCTS.find((p) => p.id === itemId);
     else if (type === "course") item = COURSES.find((c) => c.id === itemId);
-    else if (type === "consultation") item = DURATIONS.find((d) => String(d.minutes) === String(itemId));
+    else if (type === "consultation") {
+      const durations = await getConsultationDurations();
+      item = durations.find((d) => String(d.minutes) === String(itemId));
+    }
     if (!item) return Response.json({ error: "Item tidak ditemukan" }, { status: 404 });
 
     const price = item.price;

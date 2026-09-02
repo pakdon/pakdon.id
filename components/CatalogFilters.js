@@ -1,6 +1,5 @@
 "use client";
 
-// Filter generik: chip kategori + dropdown rentang harga. Dipakai di halaman Ebook & Kelas.
 export default function CatalogFilters({ categories, activeCategory, onCategoryChange, priceBuckets, activePriceKey, onPriceChange, resultCount }) {
   return (
     <div style={{ marginBottom: 30 }}>

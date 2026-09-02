@@ -1,11 +1,14 @@
 "use client";
 import { useState } from "react";
 import { Calendar, MessageCircle, Mail, ArrowRight } from "lucide-react";
-import { DURATIONS, formatIDR } from "@/lib/data";
+import { DURATIONS as DEFAULT_DURATIONS, formatIDR } from "@/lib/data";
 import Reveal from "./Reveal";
 
-export default function Consultation() {
-  const [duration, setDuration] = useState(60);
+// `durations` dikirim dari app/konsultasi/page.js (Server Component) hasil fetch Firestore
+// (lihat lib/content.js -> getConsultationDurations), dengan fallback ke DEFAULT_DURATIONS
+// supaya form tetap tampil normal walau Firestore/CMS belum diisi.
+export default function Consultation({ durations = DEFAULT_DURATIONS }) {
+  const [duration, setDuration] = useState(durations[0]?.minutes || 60);
   const [form, setForm] = useState({ name: "", whatsapp: "", topic: "" });
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
@@ -62,7 +65,7 @@ export default function Consultation() {
               <>
                 <div style={{ fontWeight: 600, marginBottom: 14, fontSize: 14 }}>Pilih durasi sesi</div>
                 <div className="grid-3">
-                  {DURATIONS.map((d) => (
+                  {durations.map((d) => (
                     <div key={d.minutes} onClick={() => setDuration(d.minutes)}
                       style={{ border: `1.5px solid ${duration === d.minutes ? "var(--accent)" : "var(--border)"}`, borderRadius: 16, padding: 16, cursor: "pointer", background: duration === d.minutes ? "color-mix(in srgb, var(--accent) 10%, transparent)" : "transparent", transition: "all .25s ease" }}>
                       <div style={{ fontWeight: 700, fontSize: 18 }}>{d.minutes}<span style={{ fontSize: 12, fontWeight: 500 }}> menit</span></div>

@@ -11,18 +11,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
-
       - run: npm ci
-
       - run: npm run lint --if-present
-
-      # Env dummy hanya supaya proses build tidak gagal karena variabel kosong.
-      # Nilai sungguhan diisi lewat Vercel Environment Variables saat deploy asli.
       - name: Build
         run: npm run build
         env:

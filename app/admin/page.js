@@ -9,6 +9,7 @@ export default function AdminDashboard() {
   const [counts, setCounts] = useState({ posts: 0, products: 0, bookings: 0, subscribers: 0 });
 
   useEffect(() => {
+    if (!db) return;
     (async () => {
       try {
         const [posts, products, bookings, subs] = await Promise.all(

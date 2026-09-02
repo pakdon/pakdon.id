@@ -21,8 +21,7 @@ export const metadata = {
     url: SITE_URL,
     siteName: "PakDon.id",
     title: "PakDon.id — Bangun Bisnis yang Menghasilkan, Bukan Sekadar Ramai",
-    description:
-      "Insight bisnis, UMKM, retail, e-commerce, teknologi, AI, produktivitas, dan financial freedom dari Pak Don.",
+    description: "Insight bisnis, UMKM, retail, e-commerce, teknologi, AI, produktivitas, dan financial freedom dari Pak Don.",
     images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "PakDon.id" }],
   },
   twitter: {
@@ -41,8 +40,7 @@ const personSchema = {
   name: "Pak Don",
   url: SITE_URL,
   jobTitle: "Entrepreneur & Business Mentor",
-  description:
-    "Entrepreneur Indonesia yang membangun bisnis retail, e-commerce, dan mengedukasi UMKM seputar AI, sistem bisnis, dan financial freedom.",
+  description: "Entrepreneur Indonesia yang membangun bisnis retail, e-commerce, dan mengedukasi UMKM seputar AI, sistem bisnis, dan financial freedom.",
   sameAs: [
     "https://instagram.com/pakdon.id",
     "https://youtube.com/@pakdon.id",
@@ -52,7 +50,6 @@ const personSchema = {
   worksFor: { "@type": "Organization", name: "PakDon.id" },
 };
 
-// Script inline kecil supaya tema dark/light diterapkan SEBELUM React hydrate — mencegah flash warna.
 const themeInitScript = `
 try {
   const saved = localStorage.getItem('pd-theme');
@@ -66,10 +63,7 @@ export default function RootLayout({ children }) {
     <html lang="id">
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
-        />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }} />
       </head>
       <body>
         <Navbar />
