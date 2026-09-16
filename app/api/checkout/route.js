@@ -29,7 +29,7 @@ export async function POST(req) {
     if (!item) return Response.json({ error: "Item tidak ditemukan" }, { status: 404 });
 
     const price = item.price;
-    const name = item.title || item.name || `Konsultasi ${item.minutes} Menit`;
+    const name = item.title || item.name || `Konsultasi ${item.duration || ""}`.trim();
     const orderId = `${type}-${itemId}-${Date.now()}`;
 
     const snap = getSnap();

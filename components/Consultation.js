@@ -7,7 +7,7 @@ import Reveal from "./Reveal";
 // `packages` dikirim dari app/konsultasi/page.js (Server Component) hasil fetch Firestore
 // (lihat lib/content.js -> getConsultationDurations), dengan fallback ke DEFAULT_DURATIONS
 // supaya form tetap tampil normal walau Firestore/CMS belum diisi.
-// Setiap paket: { id, name, desc, minutes, price, lynkUrl }
+// Setiap paket: { id, name, desc, duration (teks bebas), price, lynkUrl }
 // Pembayaran dilakukan lewat link produk Lynk.id masing-masing paket (lynkUrl),
 // sementara form di bawah dipakai untuk mencatat detail booking & jadwal via WhatsApp.
 export default function Consultation({ packages = DEFAULT_DURATIONS }) {
@@ -90,7 +90,7 @@ export default function Consultation({ packages = DEFAULT_DURATIONS }) {
                     <div key={p.id} onClick={() => setSelectedId(p.id)}
                       style={{ border: `1.5px solid ${selectedId === p.id ? "var(--accent)" : "var(--border)"}`, borderRadius: 16, padding: 16, cursor: "pointer", background: selectedId === p.id ? "color-mix(in srgb, var(--accent) 10%, transparent)" : "transparent", transition: "all .25s ease" }}>
                       <div style={{ fontWeight: 700, fontSize: 15 }}>{p.name}</div>
-                      <div className="pd-sub" style={{ fontSize: 12, marginTop: 4 }}>{p.minutes} menit</div>
+                      <div className="pd-sub" style={{ fontSize: 12, marginTop: 4 }}>{p.duration}</div>
                       <div className="pd-sub" style={{ fontSize: 12, marginTop: 2 }}>{p.desc}</div>
                       <div style={{ fontWeight: 600, marginTop: 10, fontSize: 13.5 }}>{formatIDR(p.price)}</div>
                       {p.lynkUrl && (

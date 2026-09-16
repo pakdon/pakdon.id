@@ -22,7 +22,12 @@ export default function AdminConsultationPage() {
       try {
         const snap = await getDoc(doc(db, "settings", "consultation"));
         if (snap.exists() && Array.isArray(snap.data().durations) && snap.data().durations.length) {
-          setPackages(snap.data().durations);
+          // Kompatibilitas: paket yang tersimpan sebelum durasi jadi teks bebas
+          // masih memakai `minutes` (angka). Ubah jadi teks supaya kolomnya tidak kosong.
+          setPackages(snap.data().durations.map((p) => ({
+            ...p,
+            duration: (p.duration || "").trim() || (p.minutes ? `${p.minutes} menit` : ""),
+          })));
         }
       } catch (e) {
         console.warn("Gagal memuat paket konsultasi:", e.message);
@@ -37,7 +42,7 @@ export default function AdminConsultationPage() {
   };
 
   const addPackage = () => {
-    setPackages((prev) => [...prev, { id: `paket-baru-${prev.length + 1}`, name: "", desc: "", minutes: 60, price: 0, lynkUrl: "" }]);
+    setPackages((prev) => [...prev, { id: `paket-baru-${prev.length + 1}`, name: "", desc: "", duration: "", price: 0, lynkUrl: "" }]);
   };
 
   const removePackage = (index) => {
@@ -51,8 +56,8 @@ export default function AdminConsultationPage() {
     try {
       const usedIds = new Set();
       const cleaned = packages
-        .map((p) => ({ name: (p.name || "").trim(), desc: p.desc || "", minutes: Number(p.minutes), price: Number(p.price), lynkUrl: (p.lynkUrl || "").trim() }))
-        .filter((p) => p.name && p.minutes > 0 && p.price >= 0)
+        .map((p) => ({ name: (p.name || "").trim(), desc: p.desc || "", duration: (p.duration || "").trim(), price: Number(p.price), lynkUrl: (p.lynkUrl || "").trim() }))
+        .filter((p) => p.name && p.duration && p.price >= 0)
         .map((p) => {
           let id = slugify(p.name);
           let candidate = id;
@@ -60,8 +65,7 @@ export default function AdminConsultationPage() {
           while (usedIds.has(candidate)) { candidate = `${id}-${n}`; n += 1; }
           usedIds.add(candidate);
           return { id: candidate, ...p };
-        })
-        .sort((a, b) => a.minutes - b.minutes);
+        });
 
       if (cleaned.length === 0) { setError("Minimal harus ada 1 paket dengan nama, durasi, dan harga terisi."); setSaving(false); return; }
 
@@ -125,8 +129,8 @@ export default function AdminConsultationPage() {
                   <input className="pd-input" value={p.desc} onChange={(e) => updateField(i, "desc", e.target.value)} placeholder="mis. Diskusi mendalam satu topik" />
                 </div>
                 <div>
-                  <label className="pd-sub" style={{ fontSize: 11.5, display: "block", marginBottom: 4 }}>3. Durasi (menit)</label>
-                  <input className="pd-input" type="number" value={p.minutes} onChange={(e) => updateField(i, "minutes", e.target.value)} />
+                  <label className="pd-sub" style={{ fontSize: 11.5, display: "block", marginBottom: 4 }}>3. Durasi</label>
+                  <input className="pd-input" value={p.duration || ""} onChange={(e) => updateField(i, "duration", e.target.value)} placeholder="mis. 30 menit / 2 jam / 1 hari" />
                 </div>
                 <div>
                   <label className="pd-sub" style={{ fontSize: 11.5, display: "block", marginBottom: 4 }}>4. Harga (Rp)</label>
@@ -164,7 +168,7 @@ export default function AdminConsultationPage() {
           {packages.map((p, i) => (
             <div key={i} style={{ border: "1.5px solid var(--border)", borderRadius: 16, padding: 16 }}>
               <div style={{ fontWeight: 700, fontSize: 15 }}>{p.name || "(Nama paket belum diisi)"}</div>
-              <div className="pd-sub" style={{ fontSize: 12, marginTop: 4 }}>{p.minutes || 0} menit</div>
+              <div className="pd-sub" style={{ fontSize: 12, marginTop: 4 }}>{p.duration || "—"}</div>
               <div className="pd-sub" style={{ fontSize: 12, marginTop: 2 }}>{p.desc || "—"}</div>
               <div style={{ fontWeight: 600, marginTop: 10, fontSize: 13.5 }}>{formatIDR(Number(p.price) || 0)}</div>
             </div>

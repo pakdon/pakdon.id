@@ -24,7 +24,7 @@ export async function POST(req) {
     if (adminDb) {
       const ref = await adminDb.collection("bookings").add({
         name, whatsapp, topic: topic || "",
-        packageId: pkg.id, packageName: pkg.name, duration: pkg.minutes, price: pkg.price, lynkUrl: pkg.lynkUrl || "",
+        packageId: pkg.id, packageName: pkg.name, duration: pkg.duration, price: pkg.price, lynkUrl: pkg.lynkUrl || "",
         status: "pending_payment",
         createdAt: new Date().toISOString(),
       });
@@ -33,7 +33,7 @@ export async function POST(req) {
 
     const waNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "6281200000000";
     const waText = encodeURIComponent(
-      `Halo Pak Don, saya ${name} ingin booking ${pkg.name} (${pkg.minutes} menit).\nTopik: ${topic || "-"}\nID Booking: ${bookingId || "-"}`
+      `Halo Pak Don, saya ${name} ingin booking ${pkg.name} (${pkg.duration}).\nTopik: ${topic || "-"}\nID Booking: ${bookingId || "-"}`
     );
     const waLink = `https://wa.me/${waNumber}?text=${waText}`;
 
