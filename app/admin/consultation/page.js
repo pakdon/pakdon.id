@@ -2,7 +2,7 @@
 export const dynamic = "force-dynamic";
 import { useEffect, useState } from "react";
 import { doc, getDoc, setDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { db, firebaseDiagnostics } from "@/lib/firebase";
 import { Save, Plus, Trash2 } from "lucide-react";
 import { DURATIONS as DEFAULT_DURATIONS, formatIDR, slugify } from "@/lib/data";
 
@@ -76,7 +76,7 @@ export default function AdminConsultationPage() {
       setSavedAt(new Date());
     } catch (e) {
       if (e.message === "TIMEOUT") {
-        setError("Waktu penyimpanan habis (15 detik) — kemungkinan Firestore rules belum ter-deploy, koneksi terblokir (coba matikan ad-blocker/VPN), atau project Firebase salah konfigurasi.");
+        setError(`Waktu penyimpanan habis (15 detik). Firestore sedang mencoba menghubungi project: "${firebaseDiagnostics.projectId}" — pastikan nama ini persis sama dengan Project ID di Firebase Console (tanpa tanda kutip, tanpa spasi).`);
       } else if (e.code === "permission-denied") {
         setError("Akses ditolak Firestore — pastikan firestore.rules sudah di-deploy dan Anda login sebagai admin yang valid.");
       } else {
@@ -95,6 +95,21 @@ export default function AdminConsultationPage() {
       <p className="pd-sub" style={{ fontSize: 14, marginTop: 6 }}>
         Atur paket konsultasi yang tampil di halaman <code>/konsultasi</code>: nama paket, deskripsi, durasi, dan harga.
       </p>
+
+      <div className="pd-card" style={{ padding: 16, marginTop: 16, borderColor: firebaseDiagnostics.missing.length ? "#e5484d" : "var(--border)" }}>
+        <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 8 }}>Status koneksi Firebase</div>
+        <div className="pd-sub" style={{ fontSize: 12.5, lineHeight: 1.8 }}>
+          Project ID: <code>{firebaseDiagnostics.projectId}</code><br />
+          Auth domain: <code>{firebaseDiagnostics.authDomain}</code><br />
+          API key: {firebaseDiagnostics.apiKeyPresent ? "terisi" : "KOSONG"}
+          {firebaseDiagnostics.missing.length > 0 && (
+            <>
+              <br />
+              <span style={{ color: "#e5484d" }}>Belum diisi: {firebaseDiagnostics.missing.join(", ")}</span>
+            </>
+          )}
+        </div>
+      </div>
 
       <div className="pd-card" style={{ padding: 22, marginTop: 20 }}>
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
