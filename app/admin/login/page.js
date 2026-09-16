@@ -3,7 +3,7 @@ export const dynamic = "force-dynamic";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { auth, firebaseDiagnostics } from "@/lib/firebase";
 import { Lock } from "lucide-react";
 
 export default function AdminLoginPage() {
@@ -41,6 +41,18 @@ export default function AdminLoginPage() {
           <input className="pd-input" type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
         </div>
         {error && <div style={{ color: "#e5484d", fontSize: 12.5, marginTop: 10 }}>{error}</div>}
+
+        {firebaseDiagnostics.missing.length > 0 && (
+          <div style={{ marginTop: 14, padding: 12, borderRadius: 12, border: "1px solid #e5484d", fontSize: 12, lineHeight: 1.7 }}>
+            <div style={{ fontWeight: 600, marginBottom: 6, color: "#e5484d" }}>Konfigurasi Firebase belum lengkap</div>
+            <div className="pd-sub" style={{ fontSize: 11.5 }}>
+              Tidak terbaca: {firebaseDiagnostics.missing.join(", ")}
+              <br /><br />
+              Di Vercel, variabel <code>NEXT_PUBLIC_*</code> harus bertipe <b>Config</b>, bukan <b>Secret</b>.
+              Secret bersifat write-only sehingga nilainya tidak ikut ter-build ke browser.
+            </div>
+          </div>
+        )}
         <button type="submit" className="pd-btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 18 }} disabled={loading}>
           {loading ? "Memproses..." : "Masuk"}
         </button>
