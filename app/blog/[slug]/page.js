@@ -3,6 +3,10 @@ import Link from "next/link";
 import { Clock, ArrowLeft } from "lucide-react";
 import { getBlogPosts } from "@/lib/content";
 
+// Artikel baru atau hasil edit dari Admin muncul tanpa perlu build ulang.
+export const revalidate = 60;
+export const dynamicParams = true;
+
 export async function generateStaticParams() {
   const posts = await getBlogPosts();
   return posts.map((p) => ({ slug: p.slug }));

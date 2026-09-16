@@ -1,6 +1,10 @@
 import { getDigitalProducts } from "@/lib/content";
 import EbookCatalog from "@/components/EbookCatalog";
 
+// Harga produk selalu diambil ulang dari Firestore supaya perubahan dari Admin
+// langsung tampil, bukan memakai snapshot saat build.
+export const revalidate = 0;
+
 export const metadata = {
   title: "Ebook & Produk Digital",
   description: "Toolkit siap pakai untuk bisnis Anda: ebook, SOP, dashboard, template, dan prompt AI dari PakDon.id.",

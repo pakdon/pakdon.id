@@ -1,6 +1,10 @@
 import { getCourses } from "@/lib/content";
 import CourseCatalog from "@/components/CourseCatalog";
 
+// Harga kelas selalu diambil ulang dari Firestore supaya perubahan dari Admin
+// langsung tampil, bukan memakai snapshot saat build.
+export const revalidate = 0;
+
 export const metadata = {
   title: "Kelas Online",
   description: "Kelas online untuk mempercepat pertumbuhan bisnis Anda: AI untuk UMKM, ecommerce, retail, personal branding, dan financial freedom.",

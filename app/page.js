@@ -1,3 +1,7 @@
+// Konten dari CMS (artikel, portfolio, testimonial, video) disegarkan tiap 60 detik
+// tanpa perlu build ulang.
+export const revalidate = 60;
+
 import Hero from "@/components/Hero";
 import About from "@/components/About";
 import Services from "@/components/Services";
